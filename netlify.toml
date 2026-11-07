@@ -1,9 +1,0 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
-
-[functions]
-  node_bundler = "esbuild"
-
-# 站点根目录就是 . ，静态文件直接发布
-# 函数通过 config.path 自己声明路由，不需要额外 redirects

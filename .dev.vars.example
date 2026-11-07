@@ -1,6 +1,0 @@
-# 本地开发用（不要提交到 Git，已在 .gitignore 里）
-# 复制本文件为 .dev.vars 后填入真实值
-
-AI_KEY=sk-your-key-here
-# AI_BASE=https://api.deepseek.com/chat/completions
-# AI_MODEL=deepseek-chat
