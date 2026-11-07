@@ -1,107 +1,109 @@
-﻿/* ============================================
-   前端逻辑 —— 留言板 + AI 换装
-   ============================================ */
+/* ══════════════════════════════════════════
+   溟月 · MINGYUE  —  前端逻辑
+   ══════════════════════════════════════════ */
 
-/* ---------- 小工具 ---------- */
-
-/** HTML 转义，防 XSS（所有用户输入渲染前必须过一遍） */
 const esc = (s) =>
   String(s).replace(/[<>&"']/g, (c) => ({
     "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&#39;",
   }[c]));
 
-/** 时间格式化 */
-const fmtTime = (t) =>
-  new Date(t).toLocaleString("zh-CN", {
-    month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
-  });
+const fmtTime = (t) => {
+  const d = new Date(t);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
 
-/** 统一的请求封装：拿 JSON、处理错误 */
 async function req(path, opts = {}) {
   let r;
   try {
     r = await fetch(path, { ...opts, cache: "no-store" });
   } catch {
-    throw new Error("网络连接失败，请稍后重试");
+    throw new Error("网络连接失败");
   }
 
   let data;
   try {
     data = await r.json();
   } catch {
-    throw new Error(r.status === 429 ? "访问太频繁，请稍后再试" : "服务暂时不可用");
+    throw new Error(r.status === 429 ? "太频繁了，等一下" : "服务不可用");
   }
 
-  if (!r.ok || data.error) {
-    throw new Error(data.error || "提交失败，请稍后重试");
-  }
+  if (!r.ok || data.error) throw new Error(data.error || "提交失败");
   return data;
 }
 
-/* ---------- 昵称记忆 ---------- */
 const myName = {
   get: () => localStorage.getItem("nick") || "",
   set: (n) => localStorage.setItem("nick", n),
 };
 
-/* ============================================
-   留言板
-   ============================================ */
+/* ══════════ 时钟 ══════════ */
+function initClock() {
+  const el = document.querySelector("#clock");
+  if (!el) return;
+  const tick = () => {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
+    el.textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ══════════ 留言板 ══════════ */
 function initBoard() {
   const list = document.querySelector("#boardList");
   const form = document.querySelector("#boardForm");
   const nameInput = document.querySelector("#boardName");
   const msgInput = document.querySelector("#boardMsg");
   const errBox = document.querySelector("#boardError");
-  const btn = form.querySelector('button[type="submit"]');
+  const btn = form?.querySelector('button[type="submit"]');
 
   if (!list || !form) return;
 
-  // 回填上次用的昵称
   nameInput.value = myName.get();
 
-  /** 渲染一条留言 */
+  const LOCAL_KEY = "board_local";
+  const localRead = () => {
+    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch { return []; }
+  };
+  const localWrite = (arr) => localStorage.setItem(LOCAL_KEY, JSON.stringify(arr.slice(-300)));
+
   function renderItem(item) {
     const el = document.createElement("div");
     el.className = "board-item";
-    el.innerHTML =
-      `<span class="who">${esc(item.name)}</span>` +
-      `<span class="when">${fmtTime(item.t)}</span>` +
-      `<div class="txt">${esc(item.msg)}</div>`;
-    return el;
-  }
 
-  /** 本地存储兜底（GitHub Pages 没有后端时用） */
-  const LOCAL_KEY = "board_local";
-  function localRead() {
-    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch { return []; }
-  }
-  function localWrite(arr) {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(arr.slice(-300)));
+    const who = document.createElement("div");
+    who.className = "who";
+    who.textContent = item.name;
+    who.dataset.t = fmtTime(item.t);
+
+    const txt = document.createElement("div");
+    txt.className = "txt";
+    txt.textContent = item.msg;
+
+    el.append(who, txt);
+    return el;
   }
 
   function paint(items) {
     list.innerHTML = "";
     if (!items.length) {
-      list.innerHTML = '<p class="loading">还没有人留言，做第一个吧 ✿</p>';
+      list.innerHTML = '<div class="board-empty">还没有留言</div>';
       return;
     }
     items.slice().reverse().forEach((it) => list.appendChild(renderItem(it)));
   }
 
-  /** 拉取列表 */
   async function load() {
     try {
       const data = await req("/api/board");
-      const items = Array.isArray(data) ? data : data.items || [];
-      paint(items);
+      paint(Array.isArray(data) ? data : data.items || []);
     } catch {
-      // 没有后端 → 用本地存储
       paint(localRead());
     }
   }
 
-  /** 提交 */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errBox.textContent = "";
@@ -111,7 +113,7 @@ function initBoard() {
     if (!name || !msg) return;
 
     btn.disabled = true;
-    btn.textContent = "发送中…";
+    btn.textContent = "…";
 
     try {
       myName.set(name);
@@ -121,39 +123,34 @@ function initBoard() {
         body: JSON.stringify({ name, msg }),
       });
       msgInput.value = "";
-      const items = Array.isArray(data) ? data : data.items || [];
-      paint(items);
+      paint(Array.isArray(data) ? data : data.items || []);
     } catch {
-      // 没有后端 → 存本地
       const arr = localRead();
-      arr.push({ id: String(Date.now()), name: esc(name), msg: esc(msg), t: Date.now() });
+      arr.push({ id: String(Date.now()), name, msg, t: Date.now() });
       localWrite(arr);
       msgInput.value = "";
       paint(localRead());
-      errBox.textContent = "";
+      errBox.textContent = "（后端不可用，已存到本地）";
     } finally {
       btn.disabled = false;
-      btn.textContent = "投递 💌";
+      btn.textContent = "发送";
     }
   });
 
   load();
 }
 
-/* ============================================
-   AI 换装（可选）
-   ============================================ */
-function initMagic() {
-  const section = document.querySelector("#magic");
-  const form = document.querySelector("#magicForm");
-  const input = document.querySelector("#magicInput");
-  const status = document.querySelector("#magicStatus");
+/* ══════════ 主题引擎 ══════════ */
+function initTheme() {
+  const section = document.querySelector("#theme");
+  const form = document.querySelector("#themeForm");
+  const input = document.querySelector("#themeInput");
+  const status = document.querySelector("#themeStatus");
   const btn = form?.querySelector('button[type="submit"]');
 
   if (!section || !form) return;
 
-  // 要改的 CSS 变量
-  const VARS = ["--bg", "--bg2", "--pri", "--pri-deep", "--acc", "--ink", "--ink-soft", "--fs", "--radius"];
+  const VARS = ["--bg", "--bg2", "--surface", "--line", "--line2", "--ink", "--ink-soft", "--ink-dim", "--acc", "--acc2"];
 
   function apply(theme) {
     VARS.forEach((k) => {
@@ -161,44 +158,35 @@ function initMagic() {
     });
   }
 
-  /** 本地兜底配色（AI 不可用时用） */
   const LOCAL = {
-    "紫": { "--bg": "#f7f2ff", "--bg2": "#efe4ff", "--pri": "#b794f6", "--pri-deep": "#8b5cf6", "--acc": "#fbc2eb" },
-    "绿": { "--bg": "#f0fbf4", "--bg2": "#e0f5e9", "--pri": "#7ed9a2", "--pri-deep": "#38b26f", "--acc": "#c3f0e8" },
-    "橘": { "--bg": "#fff8f0", "--bg2": "#ffeeda", "--pri": "#ffb26b", "--pri-deep": "#f2892e", "--acc": "#ffd6a5" },
-    "蓝": { "--bg": "#f0f7ff", "--bg2": "#e1efff", "--pri": "#7fb8f0", "--pri-deep": "#3f8ad8", "--acc": "#c3e0f7" },
-    "粉": { "--bg": "#fff7fb", "--bg2": "#ffeef5", "--pri": "#ff8fb8", "--pri-deep": "#f4679d", "--acc": "#a5d8ff" },
+    "深": { "--bg": "#070d14", "--bg2": "#0c1520", "--surface": "#101c2a", "--line": "#1b2c3f", "--line2": "#27405a", "--ink": "#e2eef9", "--ink-soft": "#7b95ad", "--ink-dim": "#4a6278", "--acc": "#38bdf8", "--acc2": "#818cf8" },
+    "森林": { "--bg": "#080f0a", "--bg2": "#0d1710", "--surface": "#122016", "--line": "#1d3224", "--line2": "#294634", "--ink": "#e4f0e7", "--ink-soft": "#7da08a", "--ink-dim": "#4d6b57", "--acc": "#4ade80", "--acc2": "#a3e635" },
+    "纸": { "--bg": "#f5f2e9", "--bg2": "#ece7da", "--surface": "#f9f6ef", "--line": "#ddd5c2", "--line2": "#c9bda3", "--ink": "#2a2620", "--ink-soft": "#756c5b", "--ink-dim": "#a39984", "--acc": "#b45309", "--acc2": "#78716c" },
+    "硬": { "--bg": "#0a0a0a", "--bg2": "#121212", "--surface": "#1a1a1a", "--line": "#2a2a2a", "--line2": "#3d3d3d", "--ink": "#f5f5f5", "--ink-soft": "#a3a3a3", "--ink-dim": "#666666", "--acc": "#ef4444", "--acc2": "#f97316" },
   };
 
   function localFallback(desc) {
-    const key = Object.keys(LOCAL).find((k) => desc.includes(k))
-      || (/海|天|冰/.test(desc) ? "蓝"
-        : /森|薄荷|春/.test(desc) ? "绿"
-        : /夕阳|暖|秋/.test(desc) ? "橘"
-        : /星|梦|夜/.test(desc) ? "紫" : "粉");
+    const key = Object.keys(LOCAL).find((k) => desc.includes(k)) || "深";
     apply(LOCAL[key]);
+    status.textContent = "// 已切换（本地模式）";
   }
 
   async function cast(desc) {
-    status.textContent = "✨ 施法中…";
-    btn && (btn.disabled = true);
+    status.textContent = "// 处理中…";
+    btn.disabled = true;
     try {
       const data = await req("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "theme", desc }),
       });
-      if (data.theme) {
-        apply(data.theme);
-        status.textContent = "✨ " + (data.comment || "变身完成！");
-      } else {
-        throw new Error("AI 没返回配色");
-      }
-    } catch (e) {
+      if (!data.theme) throw new Error("no theme");
+      apply(data.theme);
+      status.textContent = "// " + (data.comment || "完成");
+    } catch {
       localFallback(desc);
-      status.textContent = "✨ 变身完成！（AI 不可用，用了本地配色）";
     } finally {
-      btn && (btn.disabled = false);
+      btn.disabled = false;
     }
   }
 
@@ -208,11 +196,11 @@ function initMagic() {
     if (v) cast(v);
   });
 
-  document.querySelectorAll(".btn-preset").forEach((b) => {
+  document.querySelectorAll(".tbtn").forEach((b) => {
     b.addEventListener("click", () => cast(b.dataset.p));
   });
 
-  // 探测 AI 是否可用：调一次轻量请求，失败就把整个区块藏起来
+  // 探测 AI 是否可用
   fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -222,13 +210,12 @@ function initMagic() {
     .catch(() => {});
 }
 
-/* ============================================
-   启动
-   ============================================ */
+/* ══════════ 启动 ══════════ */
 document.addEventListener("DOMContentLoaded", () => {
   const y = document.querySelector("#year");
   if (y) y.textContent = new Date().getFullYear();
 
+  initClock();
   initBoard();
-  initMagic();
+  initTheme();
 });
