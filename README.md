@@ -1,61 +1,58 @@
 # 我的个人空间
 
-纯静态站 + 两个 API 函数，跑在 Cloudflare Pages 上。
+已上线：**https://mingyue-home.pages.dev**
 
-## 部署（4 步）
+## 结构
 
-**1.** 打开 https://dash.cloudflare.com
+```
+docs/                 静态页面（GitHub Pages 也在用）
+├── index.html
+├── css/style.css
+├── js/app.js
+├── avatar.svg
+└── favicon.svg
+functions/api/        Cloudflare Pages Functions
+├── board.js          留言板（KV: BOARD_KV）
+└── chat.js           AI（环境变量 AI_KEY）
+```
 
-**2.** 左边点 `Workers & Pages` → 右上 `Create` → 选 **Pages** 那个卡片（不是 Workers）
+## 资源
 
-**3.** `Connect to Git` → 选仓库 `lllcc-cc/mysite` → `Begin setup`
-
-**4.** 三项这样填，然后点 `Save and Deploy`：
-
-| 字段 | 值 |
+| 项 | 值 |
 |---|---|
-| Framework preset | `None` |
-| Build command | **留空** |
-| Build output directory | **留空** |
+| Pages 项目 | `mingyue-home` |
+| 地址 | https://mingyue-home.pages.dev |
+| KV 命名空间 | `mingyue-board` |
+| KV ID | `7342625feace420eb7ad30cbdaf68460` |
+| GitHub Pages | https://lllcc-cc.github.io/mysite/ |
 
-等 30 秒，拿到 `https://xxx.pages.dev`。
+## 改完代码怎么更新
 
----
+```powershell
+cd E:\zuoPPT\mysite
+git add .; git commit -m "改了啥"; git push
 
-## 绑 KV（留言板要它）
-
-```
-Workers & Pages → KV → Create a namespace → 名字 mysite-kv
-→ 回 Pages 项目 → Settings → Functions → KV namespace bindings
-→ Add binding
-     Variable name: BOARD_KV
-     KV namespace:  mysite-kv
-→ Save → Deployments → 最新那条 → Retry deployment
+# Cloudflare 部署（需要梯子）
+$env:HTTPS_PROXY="http://127.0.0.1:7890"
+wrangler pages deploy docs --project-name mingyue-home --branch main
 ```
 
----
-
-## 配 AI（可选）
+## 加 AI
 
 ```
-platform.deepseek.com 注册 → 充 ¥10 → 创建 API key
-→ Pages 项目 → Settings → Environment variables
-→ Add variable:  AI_KEY = sk-xxx   （勾 Encrypt）
-→ Save → Retry deployment
+platform.deepseek.com → 充 ¥10 → 拿 API key
+Cloudflare → mingyue-home → Settings → Environment variables
+→ AI_KEY = sk-xxx（勾 Encrypt）→ 重新部署
 ```
 
-不配也不影响，AI 换装那一块会自动隐藏。
+## 改内容
 
----
-
-## 文件说明
-
-```
-index.html            首页（改名字、简介、卡片）
-css/style.css         样式（顶部 :root 是整套配色）
-js/app.js             留言板 + AI 前端逻辑
-avatar.svg            头像（换成自己的图）
-favicon.svg           网站图标
-functions/api/board.js  留言板接口
-functions/api/chat.js   AI 接口（key 只在服务端）
-```
+| 想改 | 文件 | 搜什么 |
+|---|---|---|
+| 名字 | `docs/index.html` | `YOUR NAME` / `你的名字` |
+| 简介 | `docs/index.html` | `hero-sub` |
+| 标签 | `docs/index.html` | `class="chip"` |
+| 四张卡片 | `docs/index.html` | `class="card"` |
+| 配色 | `docs/css/style.css` | 顶部 `:root` |
+| 头像 | 换 `docs/avatar.svg` | 支持 png/jpg |
+| AI 性格 | `functions/api/chat.js` | `CHAT_SYSTEM` |

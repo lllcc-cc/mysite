@@ -92,7 +92,7 @@ function initBoard() {
   /** 拉取列表 */
   async function load() {
     try {
-      const data = await req("api/board");
+      const data = await req("/api/board");
       const items = Array.isArray(data) ? data : data.items || [];
       paint(items);
     } catch {
@@ -115,7 +115,7 @@ function initBoard() {
 
     try {
       myName.set(name);
-      const data = await req("api/board", {
+      const data = await req("/api/board", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, msg }),
@@ -183,7 +183,7 @@ function initMagic() {
     status.textContent = "✨ 施法中…";
     btn && (btn.disabled = true);
     try {
-      const data = await req("api/chat", {
+      const data = await req("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "theme", desc }),
@@ -213,7 +213,7 @@ function initMagic() {
   });
 
   // 探测 AI 是否可用：调一次轻量请求，失败就把整个区块藏起来
-  fetch("api/chat", {
+  fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ mode: "ping" }),
