@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -13,35 +13,30 @@
 </head>
 <body>
 
-<!-- 顶部状态条 -->
 <div class="statusbar">
   <span class="dot"></span>
   <span>ONLINE</span>
   <span class="sep">/</span>
   <span id="clock">--:--:--</span>
   <span class="spacer"></span>
-  <span class="ver">v1.0</span>
+  <a href="admin.html" class="ver" style="text-decoration:none">EDIT</a>
 </div>
 
 <main>
 
-  <!-- ══════════ 首屏 ══════════ -->
   <header class="hero">
     <div class="hero-label">// PERSONAL SPACE</div>
 
     <h1 class="hero-name">
-      <span class="cn">素菜粥</span>
-      <span class="en">SUCAIZHOU</span>
+      <span class="cn" id="s-name">素菜粥</span>
+      <span class="en" id="s-en">SUCAIZHOU</span>
     </h1>
 
     <div class="hero-line"></div>
 
-    <p class="hero-desc">
-      写代码的地方。<br>
-      偶尔放点作品，偶尔说点话。
-    </p>
+    <p class="hero-desc" id="s-tagline">写代码的地方。<br>偶尔放点作品，偶尔说点话。</p>
 
-    <div class="hero-meta">
+    <div class="hero-meta" id="s-meta">
       <div class="meta-item"><span class="k">ROLE</span><span class="v">Developer</span></div>
       <div class="meta-item"><span class="k">STATUS</span><span class="v">Building</span></div>
       <div class="meta-item"><span class="k">STACK</span><span class="v">JS / Python / Java</span></div>
@@ -54,7 +49,6 @@
     </nav>
   </header>
 
-  <!-- ══════════ 作品 ══════════ -->
   <section id="work" class="block">
     <div class="block-head">
       <span class="num">01</span>
@@ -62,7 +56,7 @@
       <div class="rule"></div>
     </div>
 
-    <div class="work-list">
+    <div class="work-list" id="s-works">
       <article class="work-item">
         <div class="work-idx">001</div>
         <div class="work-main">
@@ -72,30 +66,9 @@
         </div>
         <div class="work-arrow">→</div>
       </article>
-
-      <article class="work-item">
-        <div class="work-idx">002</div>
-        <div class="work-main">
-          <h3>项目名称</h3>
-          <p>一句话说明这个项目是干什么的。</p>
-          <div class="tags"><span>Python</span><span>API</span></div>
-        </div>
-        <div class="work-arrow">→</div>
-      </article>
-
-      <article class="work-item">
-        <div class="work-idx">003</div>
-        <div class="work-main">
-          <h3>项目名称</h3>
-          <p>一句话说明这个项目是干什么的。</p>
-          <div class="tags"><span>Java</span><span>Android</span></div>
-        </div>
-        <div class="work-arrow">→</div>
-      </article>
     </div>
   </section>
 
-  <!-- ══════════ 关于 ══════════ -->
   <section id="about" class="block">
     <div class="block-head">
       <span class="num">02</span>
@@ -103,27 +76,14 @@
       <div class="rule"></div>
     </div>
 
-    <div class="about-grid">
+    <div class="about-grid" id="s-about">
       <div class="about-cell">
         <div class="about-k">在做</div>
         <div class="about-v">写点自己用得上的东西</div>
       </div>
-      <div class="about-cell">
-        <div class="about-k">在学</div>
-        <div class="about-v">还在填坑的路上</div>
-      </div>
-      <div class="about-cell">
-        <div class="about-k">喜欢</div>
-        <div class="about-v">干净的代码和安静的房间</div>
-      </div>
-      <div class="about-cell">
-        <div class="about-k">联系</div>
-        <div class="about-v">在下面留言就行</div>
-      </div>
     </div>
   </section>
 
-  <!-- ══════════ 主题引擎 ══════════ -->
   <section id="theme" class="block" hidden>
     <div class="block-head">
       <span class="num">*</span>
@@ -150,7 +110,6 @@
     </div>
   </section>
 
-  <!-- ══════════ 留言 ══════════ -->
   <section id="board" class="block">
     <div class="block-head">
       <span class="num">03</span>
@@ -177,7 +136,7 @@
 <footer class="footer">
   <div class="footer-rule"></div>
   <div class="footer-row">
-    <span>素菜粥</span>
+    <span id="s-foot">素菜粥</span>
     <span class="spacer"></span>
     <span id="year"></span>
   </div>
