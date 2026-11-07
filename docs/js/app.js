@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    前端逻辑 —— 留言板 + AI 换装
    ============================================ */
 
@@ -71,19 +71,33 @@ function initBoard() {
     return el;
   }
 
+  /** 本地存储兜底（GitHub Pages 没有后端时用） */
+  const LOCAL_KEY = "board_local";
+  function localRead() {
+    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch { return []; }
+  }
+  function localWrite(arr) {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(arr.slice(-300)));
+  }
+
+  function paint(items) {
+    list.innerHTML = "";
+    if (!items.length) {
+      list.innerHTML = '<p class="loading">还没有人留言，做第一个吧 ✿</p>';
+      return;
+    }
+    items.slice().reverse().forEach((it) => list.appendChild(renderItem(it)));
+  }
+
   /** 拉取列表 */
   async function load() {
     try {
-      const data = await req("/api/board");
+      const data = await req("api/board");
       const items = Array.isArray(data) ? data : data.items || [];
-      list.innerHTML = "";
-      if (!items.length) {
-        list.innerHTML = '<p class="loading">还没有人留言，做第一个吧 ✿</p>';
-        return;
-      }
-      items.forEach((it) => list.appendChild(renderItem(it)));
-    } catch (e) {
-      list.innerHTML = `<p class="loading">${esc(e.message)}</p>`;
+      paint(items);
+    } catch {
+      // 没有后端 → 用本地存储
+      paint(localRead());
     }
   }
 
@@ -101,17 +115,22 @@ function initBoard() {
 
     try {
       myName.set(name);
-      const data = await req("/api/board", {
+      const data = await req("api/board", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, msg }),
       });
       msgInput.value = "";
       const items = Array.isArray(data) ? data : data.items || [];
-      list.innerHTML = "";
-      items.forEach((it) => list.appendChild(renderItem(it)));
-    } catch (err) {
-      errBox.textContent = err.message;
+      paint(items);
+    } catch {
+      // 没有后端 → 存本地
+      const arr = localRead();
+      arr.push({ id: String(Date.now()), name: esc(name), msg: esc(msg), t: Date.now() });
+      localWrite(arr);
+      msgInput.value = "";
+      paint(localRead());
+      errBox.textContent = "";
     } finally {
       btn.disabled = false;
       btn.textContent = "投递 💌";
@@ -164,7 +183,7 @@ function initMagic() {
     status.textContent = "✨ 施法中…";
     btn && (btn.disabled = true);
     try {
-      const data = await req("/api/chat", {
+      const data = await req("api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "theme", desc }),
@@ -194,7 +213,7 @@ function initMagic() {
   });
 
   // 探测 AI 是否可用：调一次轻量请求，失败就把整个区块藏起来
-  fetch("/api/chat", {
+  fetch("api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ mode: "ping" }),
