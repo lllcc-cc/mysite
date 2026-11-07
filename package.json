@@ -1,0 +1,13 @@
+{
+  "name": "mysite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Pages 个人空间 —— 零服务器",
+  "scripts": {
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy . --project-name mysite"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你的名字 ✿ 个人空间</title>
+<meta name="description" content="我的个人小站 — 代码 · 生活 · 一点点魔法">
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ========== 顶部 ========== -->
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-inner">
+
+      <div class="avatar-wrap">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <img src="/avatar.svg" alt="头像" class="avatar" id="avatar">
+        <span class="emoji e1">🌸</span>
+        <span class="emoji e2">✨</span>
+        <span class="emoji e3">🍡</span>
+      </div>
+
+      <h1 class="hero-title"><span class="grad">YOUR NAME</span></h1>
+      <h2 class="hero-cn">你的名字</h2>
+      <p class="hero-sub">
+        这里写一句话介绍自己。<br>
+        第二行写你在干什么。
+      </p>
+
+      <div class="chips">
+        <span class="chip">🌸 二次元</span>
+        <span class="chip">💻 写代码的</span>
+        <span class="chip">🎵 听歌</span>
+        <span class="chip">🛸 科幻迷</span>
+      </div>
+
+      <div class="btns">
+        <a href="#board" class="btn primary">✿ 留言板</a>
+        <a href="#about" class="btn ghost">关于我</a>
+      </div>
+    </div>
+    <div class="scroll-hint">往下滑呀 ⌄</div>
+  </section>
+
+  <!-- ========== 关于 ========== -->
+  <section id="about" class="section">
+    <h2 class="sec-title">关于我</h2>
+    <div class="grid">
+
+      <div class="card tilt">
+        <div class="card-emoji">🎂</div>
+        <h3>2000.01.01</h3>
+        <p>这里写你的生日，或者一句自我介绍。</p>
+      </div>
+
+      <div class="card tilt">
+        <div class="card-emoji">🌸</div>
+        <h3>爱好一</h3>
+        <p>写你喜欢的东西，比如追番、打游戏、看书。</p>
+      </div>
+
+      <div class="card tilt">
+        <div class="card-emoji">💻</div>
+        <h3>在做什么</h3>
+        <p>写你正在做的事，比如学编程、做项目。</p>
+      </div>
+
+      <div class="card tilt">
+        <div class="card-emoji">🛸</div>
+        <h3>最近在追</h3>
+        <p>写你最近在看的番、剧、书，随便什么。</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========== AI 换装（可选，没配 key 会自动隐藏） ========== -->
+  <section id="magic" class="section" hidden>
+    <h2 class="sec-title">🪄 AI 换装间</h2>
+    <p class="sec-sub">说说你想看什么样的配色，AI 会当场把这个站改成那个样子（只对你自己生效，刷新还原）</p>
+
+    <div class="magic-box">
+      <div class="presets">
+        <button class="chip btn-preset" data-p="梦幻紫色的星空感觉">💜 梦幻紫</button>
+        <button class="chip btn-preset" data-p="清新薄荷绿，像春天的森林">🌿 薄荷绿</button>
+        <button class="chip btn-preset" data-p="温暖的橘色夕阳氛围">🍊 夕阳橘</button>
+        <button class="chip btn-preset" data-p="回到最初的樱花粉">🌸 樱花粉</button>
+      </div>
+
+      <form id="magicForm" class="board-form">
+        <input id="magicInput" maxlength="80" placeholder="例如：深蓝色的海底世界，字大一点…">
+        <button class="btn primary" type="submit">施法 ✨</button>
+      </form>
+
+      <div class="magic-status" id="magicStatus"></div>
+    </div>
+  </section>
+
+  <!-- ========== 留言板 ========== -->
+  <section id="board" class="section">
+    <h2 class="sec-title">💌 留言板</h2>
+    <p class="sec-sub">路过留个脚印，我真的会看</p>
+
+    <div class="board-box">
+      <div class="board-list" id="boardList">
+        <p class="loading">加载中…</p>
+      </div>
+
+      <form id="boardForm" class="board-form">
+        <input id="boardName" maxlength="16" placeholder="你的昵称" required>
+        <input id="boardMsg" maxlength="120" placeholder="想说点什么…" required>
+        <button class="btn primary" type="submit">投递 💌</button>
+      </form>
+      <p class="form-error" id="boardError" role="alert"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>© <span id="year"></span> 你的名字 · 用 Cloudflare Pages 搭的</p>
+</footer>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

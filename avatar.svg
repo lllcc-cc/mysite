@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff8fb8"/>
+      <stop offset="50%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7fb8f0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="100" cy="100" r="100" fill="url(#g)"/>
+  <circle cx="100" cy="100" r="100" fill="url(#glow)"/>
+
+  <!-- 脸 -->
+  <circle cx="74"  cy="96" r="8" fill="#3b2f4a"/>
+  <circle cx="126" cy="96" r="8" fill="#3b2f4a"/>
+  <circle cx="76.5" cy="93" r="2.6" fill="#fff"/>
+  <circle cx="128.5" cy="93" r="2.6" fill="#fff"/>
+
+  <!-- 腮红 -->
+  <ellipse cx="60"  cy="118" rx="12" ry="7" fill="#ff6b9d" opacity="0.35"/>
+  <ellipse cx="140" cy="118" rx="12" ry="7" fill="#ff6b9d" opacity="0.35"/>
+
+  <!-- 嘴 -->
+  <path d="M88 120 Q100 134 112 120" stroke="#3b2f4a" stroke-width="4"
+        fill="none" stroke-linecap="round"/>
+
+  <!-- 头顶小花 -->
+  <g transform="translate(140 48)">
+    <circle cx="0" cy="0" r="7" fill="#fff" opacity="0.95"/>
+    <circle cx="12" cy="0" r="7" fill="#fff" opacity="0.95"/>
+    <circle cx="-12" cy="0" r="7" fill="#fff" opacity="0.95"/>
+    <circle cx="0" cy="12" r="7" fill="#fff" opacity="0.95"/>
+    <circle cx="0" cy="-12" r="7" fill="#fff" opacity="0.95"/>
+    <circle cx="0" cy="0" r="6" fill="#ffd166"/>
+  </g>
+</svg>
