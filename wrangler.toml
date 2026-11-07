@@ -1,0 +1,15 @@
+name = "mysite"
+main = "src/worker.js"
+compatibility_date = "2025-01-01"
+
+# 静态资源：public 目录里的东西直接发布
+[assets]
+directory = "public"
+
+# KV 绑定（留言板）
+# 建好 KV 后，把 id 填进来；也可以先在后台建好再点绑定
+[[kv_namespaces]]
+binding = "BOARD_KV"
+id = ""
+
+# 环境变量在 Cloudflare 后台设置，不要写在这里
